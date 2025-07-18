@@ -16,13 +16,6 @@ import model.BodyImpl;
 import static java.awt.Font.PLAIN;
 
 public class GUI extends JFrame implements KeyListener {
-  private static final Color colors[] = {
-          new Color(0, 0, 0),
-          new Color(255, 255, 255),
-          new Color(150, 150, 150),
-          new Color(255, 50, 50),
-          new Color(100, 255, 50)
-  };
   private JLabel timeRemaining;
   private JLabel[] text;
   private Timer timer;
@@ -30,24 +23,18 @@ public class GUI extends JFrame implements KeyListener {
   private JTextArea input;
   private JButton startButton;
   private JPanel topPanel;
-  private boolean gameStarted = false;
-  private JPanel textPanel_2;
-
-  private BodyImpl body;
+  private GameState state = GameState.NOT_STARTED;
   private Controller controller;
+  private BodyImpl body;
 
   public GUI() {
-    initializeBody();
-    initializeController();
+    initialize();
     build();
   }
 
-  private void initializeController() {
-    controller = new Controller(body, this);
-  }
-
-  private void initializeBody() {
+  private void initialize() {
     body = new BodyImpl();
+    controller = new Controller(body, this);
   }
 
   private void initializeText() {
@@ -69,13 +56,6 @@ public class GUI extends JFrame implements KeyListener {
     }
 
     add(textPanel, BorderLayout.CENTER);
-  }
-
-  private void initializeSecondText() {
-    textPanel_2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    textPanel_2.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-    add(textPanel_2, BorderLayout.CENTER);
   }
 
   private void initializeTextBox() {
@@ -106,7 +86,8 @@ public class GUI extends JFrame implements KeyListener {
 
         if (secondsRemaining <= 0) {
           timer.stop();
-          body.endGame();
+          controller.endGame();
+          state = GameState.ENDED;
         }
       }
     });
@@ -132,7 +113,7 @@ public class GUI extends JFrame implements KeyListener {
   }
 
   public void timerStart() {
-    gameStarted = true;
+    state = GameState.STARTED;
     timer.start();
   }
 
@@ -145,7 +126,7 @@ public class GUI extends JFrame implements KeyListener {
 
   @Override
   public void keyTyped(KeyEvent e) {
-    if(gameStarted == true) {
+    if(state == GameState.STARTED) {
       char c = e.getKeyChar();
       controller.handleTypedChar(c);
     }
@@ -153,7 +134,7 @@ public class GUI extends JFrame implements KeyListener {
 
   @Override
   public void keyPressed(KeyEvent e) {
-    if(gameStarted == true) {
+    if(state == GameState.STARTED) {
       if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
         controller.handleBackspace();
       }
@@ -163,5 +144,9 @@ public class GUI extends JFrame implements KeyListener {
   @Override
   public void keyReleased(KeyEvent e) {
     return;
+  }
+
+  public void updateText() {
+
   }
 }

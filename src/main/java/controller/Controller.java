@@ -1,6 +1,9 @@
 package controller;
 
+import java.awt.*;
+
 import model.BodyImpl;
+import model.EnhancedChar;
 import view.GUI;
 
 public class Controller {
@@ -12,22 +15,23 @@ public class Controller {
     this.view = view;
   }
 
-  public void go() {
-    body.generateParagraph();
-  }
-
   public void handleTypedChar(char c) {
-    if(body.compareChar(c) == true) {
-      view.
+    EnhancedChar temp = new EnhancedChar(c, Color.BLACK);
+    if (body.getChars().curr().getCharacter() == c) {
+      body.getChars().curr().setColor(Color.GREEN);
+      body.getChars().next();
+    } else {
+      body.getChars().curr().setColor(Color.RED);
+      body.getChars().next();
     }
-    else {
 
-    }
-    body.pos += 1;
   }
 
   public void handleBackspace() {
-    body.pos -= 1;
+    body.getChars().prev();
+  }
+
+  public void endGame() {
   }
 
 }
