@@ -56,10 +56,12 @@ public class GUI extends JFrame implements KeyListener {
 
     textPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     textPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    textPanel.setBackground(Color.LIGHT_GRAY);
 
     for (int i = 0; i < text.length; i++) {
       text[i] = new JLabel(body.getChars().get(i).getCharacter() + "");
       text[i].setFont(new Font("Arial", PLAIN, 20));
+      text[i].setBackground(null);
       text[i].setOpaque(true);
       textPanel.add(text[i]);
     }
@@ -107,8 +109,8 @@ public class GUI extends JFrame implements KeyListener {
       if (i == pos) {
         label.setBackground(Color.YELLOW);
       } else if (i < pos) {
-        label.setForeground(body.getChars().get(i).getColor());
-        label.setBackground(null);
+          label.setForeground(body.getChars().get(i).getColor());
+          label.setBackground(null);
       } else {
         label.setForeground(Color.BLACK);
         label.setBackground(null);
@@ -129,14 +131,18 @@ public class GUI extends JFrame implements KeyListener {
     JLabel message = new JLabel("Game Completed");
     message.setFont(new Font("Arial", Font.BOLD, 75));
     message.setAlignmentX(Component.CENTER_ALIGNMENT);
+    message.setAlignmentY(Component.CENTER_ALIGNMENT);
 
     JLabel wpmLabel = new JLabel("WPM: " + WPM);
     wpmLabel.setFont(new Font("Arial", Font.BOLD, 60));
     wpmLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    wpmLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
     JLabel accuracyLabel = new JLabel("Accuracy: " + accuracy + "%");
     accuracyLabel.setFont(new Font("Arial", Font.BOLD, 60));
     accuracyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    accuracyLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
+
 
     statsPanel.add(message);
     statsPanel.add(wpmLabel);

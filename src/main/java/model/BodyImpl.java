@@ -64,7 +64,7 @@ public class BodyImpl implements Body {
     numTyped++;
   }
 
-  public void incorectTyped() {
+  public void incorrectTyped() {
     numTyped++;
   }
 

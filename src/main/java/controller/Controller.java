@@ -1,6 +1,7 @@
 package controller;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 import model.BodyImpl;
 import model.EnhancedChar;
@@ -25,12 +26,12 @@ public class Controller {
       return;
     }
     if (curr.getCharacter() == c) {
-      curr.setColor(Color.GREEN);
+      curr.setColor(new Color(0, 180, 0));
       body.correctTyped();
       body.getChars().next();
     } else {
       curr.setColor(Color.RED);
-      body.incorectTyped();
+      body.incorrectTyped();
       body.getChars().next();
     }
 
@@ -62,7 +63,7 @@ public class Controller {
     }
 
     EnhancedChar charToReset = body.getChars().get(oldPosition);
-    if(charToReset.getColor() == Color.GREEN) {
+    if(charToReset.getColor() == (new Color(0, 180, 0))) {
       body.deletedCorrect();
     }
     charToReset.setColor(Color.BLACK);
