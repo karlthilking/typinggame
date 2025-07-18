@@ -23,10 +23,10 @@ public class GUI extends JFrame implements KeyListener {
   private JPanel textPanel;
   private Timer timer;
   private int secondsRemaining = 60;
-  private JTextArea input;
   private JButton startButton;
   private JPanel topPanel;
   private GameState state = GameState.NOT_STARTED;
+  private JPanel statsPanel;
 
   private Controller controller;
   private BodyImpl body;
@@ -34,6 +34,7 @@ public class GUI extends JFrame implements KeyListener {
   public GUI() {
     initialize();
     build();
+
     this.addKeyListener(this);
     this.setFocusable(true);
     this.requestFocusInWindow();
@@ -49,6 +50,7 @@ public class GUI extends JFrame implements KeyListener {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setResizable(false);
     setSize(1000, 600);
+    setBackground(Color.LIGHT_GRAY);
 
     text = new JLabel[body.getChars().size()];
 
@@ -56,27 +58,13 @@ public class GUI extends JFrame implements KeyListener {
     textPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
     for (int i = 0; i < text.length; i++) {
-      text[i] = new JLabel(body.getChars().get(i).getCharacter() + " ");
+      text[i] = new JLabel(body.getChars().get(i).getCharacter() + "");
       text[i].setFont(new Font("Arial", PLAIN, 20));
       text[i].setOpaque(true);
       textPanel.add(text[i]);
     }
 
     add(textPanel, BorderLayout.CENTER);
-  }
-
-  private void initializeTextBox() {
-    input = new JTextArea();
-    input.setRows(1);
-    input.setColumns(30);
-    input.setLineWrap(true);
-    input.setFont(new Font("Arial", PLAIN, 18));
-    input.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.BLACK, 2),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
-    ));
-
-    add(input, BorderLayout.SOUTH);
   }
 
   private void initializeTimer() {
@@ -101,6 +89,7 @@ public class GUI extends JFrame implements KeyListener {
     startButton = new JButton();
     startButton.setPreferredSize(new Dimension(100, 30));
     startButton.setText("START");
+    startButton.setFocusable(false);
     startButton.addActionListener(e -> timerStart());
 
     topPanel.add(timeRemaining);
@@ -119,15 +108,40 @@ public class GUI extends JFrame implements KeyListener {
         label.setBackground(Color.YELLOW);
       } else if (i < pos) {
         label.setForeground(body.getChars().get(i).getColor());
-        label.setBackground(Color.WHITE);
+        label.setBackground(null);
       } else {
         label.setForeground(Color.BLACK);
-        label.setBackground(Color.WHITE);
+        label.setBackground(null);
       }
     }
 
     textPanel.revalidate();
     textPanel.repaint();
+  }
+
+  public void endOfGameDisplay(double WPM, double accuracy) {
+    getContentPane().removeAll();
+
+    statsPanel = new JPanel(new FlowLayout());
+    statsPanel.setBackground(Color.LIGHT_GRAY);
+    statsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+    JLabel message = new JLabel("Game Completed");
+    message.setFont(new Font("Arial", Font.BOLD, 75));
+    message.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+    JLabel wpmLabel = new JLabel("WPM: " + WPM);
+    wpmLabel.setFont(new Font("Arial", Font.BOLD, 60));
+    wpmLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+    JLabel accuracyLabel = new JLabel("Accuracy: " + accuracy + "%");
+    accuracyLabel.setFont(new Font("Arial", Font.BOLD, 60));
+    accuracyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+    statsPanel.add(message);
+    statsPanel.add(wpmLabel);
+    statsPanel.add(accuracyLabel);
+    add(statsPanel, BorderLayout.CENTER);
   }
 
   public void timerStart() {
@@ -137,7 +151,6 @@ public class GUI extends JFrame implements KeyListener {
 
   private void build() {
     initializeText();
-    initializeTextBox();
     initializeTimer();
     setVisible(true);
   }
@@ -146,6 +159,11 @@ public class GUI extends JFrame implements KeyListener {
   public void keyTyped(KeyEvent e) {
     if (state == GameState.STARTED) {
       char c = e.getKeyChar();
+
+      if(c == KeyEvent.VK_BACK_SPACE) {
+        return;
+      }
+
       System.out.println("Key typed: " + c);
       controller.handleTypedChar(c);
     }

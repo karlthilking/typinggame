@@ -11,6 +11,7 @@ public class BodyImpl implements Body {
   private StringBuilder paragraphBuilder;
   private CharList<EnhancedChar> chars;
   private int correctChars = 0;
+  private int numTyped;
 
   public BodyImpl() {
     words = text.split(" ");
@@ -19,7 +20,8 @@ public class BodyImpl implements Body {
   }
 
   public void generateParagraph() {
-    for(int i = 0; i <= 200; i++) {
+    paragraphBuilder = new StringBuilder();
+    for(int i = 0; i < 200; i++) {
       int x = (int)(Math.random() * words.length);
       String temp = words[x];
       paragraphBuilder.append(temp );
@@ -31,10 +33,11 @@ public class BodyImpl implements Body {
     }
     paragraph = paragraphBuilder.toString();
     chars = new CharList<>();
-    int i = 0;
-    for(char c : paragraph.toCharArray()) {
-      chars.add(new EnhancedChar(c, Color.BLACK, i));
-      i++;
+
+    for(int i = 0; i < paragraph.length(); i++) {
+      char c = paragraph.charAt(i);
+      EnhancedChar enhancedChar = new EnhancedChar(c, Color.BLACK, i);
+      chars.add(enhancedChar);
     }
   }
 
@@ -56,7 +59,24 @@ public class BodyImpl implements Body {
     }
   }
 
+  public void correctTyped() {
+    correctChars++;
+    numTyped++;
+  }
+
+  public void incorectTyped() {
+    numTyped++;
+  }
+
+  public void deletedCorrect() {
+    correctChars--;
+  }
+
   public double getWPM() {
     return correctChars / 5.0;
+  }
+
+  public double getAccuracy() {
+    return ((double)correctChars / numTyped) * 100.0;
   }
 }

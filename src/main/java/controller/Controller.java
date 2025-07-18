@@ -26,9 +26,11 @@ public class Controller {
     }
     if (curr.getCharacter() == c) {
       curr.setColor(Color.GREEN);
+      body.correctTyped();
       body.getChars().next();
     } else {
       curr.setColor(Color.RED);
+      body.incorectTyped();
       body.getChars().next();
     }
 
@@ -43,12 +45,35 @@ public class Controller {
   }
 
   public void handleBackspace() {
+    EnhancedChar curr = body.getChars().curr();
+
+    if(curr == null) {
+      System.out.println("No character to delete");
+      return;
+    }
+
+    int oldPosition = curr.getPosition();
     body.getChars().prev();
 
-    view.updateDisplay(body.getChars().curr().getPosition());
+    EnhancedChar updated = body.getChars().curr();
+    if(updated == null) {
+      body.getChars().next();
+      return;
+    }
+
+    EnhancedChar charToReset = body.getChars().get(oldPosition);
+    if(charToReset.getColor() == Color.GREEN) {
+      body.deletedCorrect();
+    }
+    charToReset.setColor(Color.BLACK);
+
+    view.updateDisplay(updated.getPosition());
   }
 
   public void endGame() {
+    double wpm = body.getWPM();
+    double acc = body.getAccuracy();
+    view.endOfGameDisplay(wpm, acc);
   }
 
 }
