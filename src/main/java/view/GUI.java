@@ -6,30 +6,37 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 
 import controller.Controller;
 import model.BodyImpl;
+import model.EnhancedChar;
 
 import static java.awt.Font.PLAIN;
 
 public class GUI extends JFrame implements KeyListener {
   private JLabel timeRemaining;
   private JLabel[] text;
+  private JPanel textPanel;
   private Timer timer;
   private int secondsRemaining = 60;
   private JTextArea input;
   private JButton startButton;
   private JPanel topPanel;
   private GameState state = GameState.NOT_STARTED;
+
   private Controller controller;
   private BodyImpl body;
 
   public GUI() {
     initialize();
     build();
+    this.addKeyListener(this);
+    this.setFocusable(true);
+    this.requestFocusInWindow();
   }
 
   private void initialize() {
@@ -43,15 +50,15 @@ public class GUI extends JFrame implements KeyListener {
     setResizable(false);
     setSize(1000, 600);
 
-    String[] words = body.getParagraph().split(" ");
-    text = new JLabel[words.length];
+    text = new JLabel[body.getChars().size()];
 
-    JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    textPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     textPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-    for (int i = 0; i < words.length; i++) {
-      text[i] = new JLabel(words[i]);
+    for (int i = 0; i < text.length; i++) {
+      text[i] = new JLabel(body.getChars().get(i).getCharacter() + " ");
       text[i].setFont(new Font("Arial", PLAIN, 20));
+      text[i].setOpaque(true);
       textPanel.add(text[i]);
     }
 
@@ -94,12 +101,7 @@ public class GUI extends JFrame implements KeyListener {
     startButton = new JButton();
     startButton.setPreferredSize(new Dimension(100, 30));
     startButton.setText("START");
-    startButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        timerStart();
-      }
-    });
+    startButton.addActionListener(e -> timerStart());
 
     topPanel.add(timeRemaining);
     topPanel.add(startButton);
@@ -107,9 +109,25 @@ public class GUI extends JFrame implements KeyListener {
     add(topPanel, BorderLayout.NORTH);
   }
 
-  private void addCharacters(int pos, char c) {
-    JLabel temp = new JLabel(String.valueOf(c));
-    temp.setFont(new Font("Arial", PLAIN, 20));
+  public void updateDisplay(int pos) {
+    System.out.println("updateDisplay called with pos: " + pos);
+
+    for (int i = 0; i < body.getChars().size(); i++) {
+      JLabel label = text[i];
+
+      if (i == pos) {
+        label.setBackground(Color.YELLOW);
+      } else if (i < pos) {
+        label.setForeground(body.getChars().get(i).getColor());
+        label.setBackground(Color.WHITE);
+      } else {
+        label.setForeground(Color.BLACK);
+        label.setBackground(Color.WHITE);
+      }
+    }
+
+    textPanel.revalidate();
+    textPanel.repaint();
   }
 
   public void timerStart() {
@@ -126,15 +144,16 @@ public class GUI extends JFrame implements KeyListener {
 
   @Override
   public void keyTyped(KeyEvent e) {
-    if(state == GameState.STARTED) {
+    if (state == GameState.STARTED) {
       char c = e.getKeyChar();
+      System.out.println("Key typed: " + c);
       controller.handleTypedChar(c);
     }
   }
 
   @Override
   public void keyPressed(KeyEvent e) {
-    if(state == GameState.STARTED) {
+    if (state == GameState.STARTED) {
       if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
         controller.handleBackspace();
       }
@@ -143,10 +162,5 @@ public class GUI extends JFrame implements KeyListener {
 
   @Override
   public void keyReleased(KeyEvent e) {
-    return;
-  }
-
-  public void updateText() {
-
   }
 }

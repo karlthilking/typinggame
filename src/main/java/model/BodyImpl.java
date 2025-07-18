@@ -20,14 +20,21 @@ public class BodyImpl implements Body {
 
   public void generateParagraph() {
     for(int i = 0; i <= 200; i++) {
-      int x = (int)(Math.random()*377);
+      int x = (int)(Math.random() * words.length);
       String temp = words[x];
-      paragraphBuilder.append(temp + " ");
+      paragraphBuilder.append(temp );
+
+      if(i < 199) {
+        paragraphBuilder.append(" ");
+      }
+
     }
     paragraph = paragraphBuilder.toString();
     chars = new CharList<>();
+    int i = 0;
     for(char c : paragraph.toCharArray()) {
-      chars.add(new EnhancedChar(c, Color.BLACK));
+      chars.add(new EnhancedChar(c, Color.BLACK, i));
+      i++;
     }
   }
 

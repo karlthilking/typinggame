@@ -5,10 +5,12 @@ import java.awt.*;
 public class EnhancedChar<T> {
   private char character;
   private Color color;
+  private int position;
 
-  public EnhancedChar(char character, Color color) {
+  public EnhancedChar(char character, Color color, int position) {
     this.character = character;
     this.color = color;
+    this.position = position;
   }
 
   public char getCharacter() {
@@ -21,5 +23,9 @@ public class EnhancedChar<T> {
 
   public void setColor(Color c) {
     this.color = c;
+  }
+
+  public int getPosition() {
+    return position;
   }
 }

@@ -16,19 +16,36 @@ public class Controller {
   }
 
   public void handleTypedChar(char c) {
-    EnhancedChar temp = new EnhancedChar(c, Color.BLACK);
-    if (body.getChars().curr().getCharacter() == c) {
-      body.getChars().curr().setColor(Color.GREEN);
+    System.out.println("Handling char: " + c);
+
+    EnhancedChar curr = body.getChars().curr();
+
+    if(curr == null) {
+      System.out.println("End of text reached");
+      return;
+    }
+    if (curr.getCharacter() == c) {
+      curr.setColor(Color.GREEN);
       body.getChars().next();
     } else {
-      body.getChars().curr().setColor(Color.RED);
+      curr.setColor(Color.RED);
       body.getChars().next();
     }
 
+    EnhancedChar updated = body.getChars().curr();
+
+    if(updated != null) {
+      view.updateDisplay(updated.getPosition());
+    }
+    else {
+      System.out.println("End of text reached");
+    }
   }
 
   public void handleBackspace() {
     body.getChars().prev();
+
+    view.updateDisplay(body.getChars().curr().getPosition());
   }
 
   public void endGame() {

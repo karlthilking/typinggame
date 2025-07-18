@@ -71,16 +71,14 @@ public class CharList<T> {
 
   public void prev() {
     if(curr != null && curr.prev != null) {
-      curr.next = curr;
       curr = curr.prev;
     }
   }
 
   public T curr() {
-   try {
-      return curr.data;
-    } catch (NullPointerException e) {
-      throw new IllegalStateException("Current node is null");
+   if(curr == null) {
+      return null;
     }
+    return curr.data;
   }
 }
