@@ -76,8 +76,8 @@ public class BodyImpl implements Body {
     correctChars--;
   }
 
-  public String getWPM() {
-    double wpm = correctChars / 5.0;
+  public String getWPM(double mins) {
+    double wpm = (correctChars / 5.0) / mins;
     String roundedWPM = String.format("%.2f", wpm);
     return roundedWPM;
   }

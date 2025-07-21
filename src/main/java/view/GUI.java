@@ -3,6 +3,7 @@ package view;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.nio.ByteOrder;
@@ -18,11 +19,12 @@ import model.EnhancedChar;
 
 import static java.awt.Font.PLAIN;
 
-public class GUI extends JFrame implements KeyListener {
+public class GUI extends JFrame implements KeyListener, ComponentListener {
   private JLabel timeRemaining;
   private JLabel[] text;
   private JPanel textPanel;
   private Timer timer;
+  private TimeMode timeMode = TimeMode.ONE_MINUTE;
   private int secondsRemaining = 60;
   private JPanel topPanel;
   private GameState state = GameState.NOT_STARTED;
@@ -78,20 +80,72 @@ public class GUI extends JFrame implements KeyListener {
     timer = new Timer(1000, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+
         secondsRemaining--;
         timeRemaining.setText(String.valueOf(secondsRemaining));
 
         if (secondsRemaining <= 0) {
           timer.stop();
-          controller.endGame();
+          controller.endGame(timeMode.toString());
           state = GameState.ENDED;
         }
       }
     });
 
     topPanel.add(timeRemaining);
-
     add(topPanel, BorderLayout.NORTH);
+  }
+
+  private void initializeTimeModeButtons() {
+    JButton selectFifteenSecond = new JButton("15");
+    selectFifteenSecond.setSize(50, 25);
+    selectFifteenSecond.setFocusable(false);
+    selectFifteenSecond.addActionListener(e -> {
+      if(state == GameState.NOT_STARTED) {
+        timeMode = TimeMode.FIFTEEN_SECOND;
+        secondsRemaining = 15;
+        timeRemaining.setText(String.valueOf(secondsRemaining));
+      }
+    });
+
+    JButton selectThirtySecond = new JButton("30");
+    selectThirtySecond.setSize(50, 25);
+    selectThirtySecond.setFocusable(false);
+    selectThirtySecond.addActionListener(e -> {
+      if(state == GameState.NOT_STARTED) {
+        timeMode = TimeMode.THIRTY_SECOND;
+        secondsRemaining = 30;
+        timeRemaining.setText(String.valueOf(secondsRemaining));
+      }
+    });
+
+    JButton selectOneMinute = new JButton("60");
+    selectOneMinute.setSize(50, 25);
+    selectOneMinute.setFocusable(false);
+    selectOneMinute.addActionListener(e -> {
+      if(state == GameState.NOT_STARTED) {
+        timeMode = TimeMode.ONE_MINUTE;
+        secondsRemaining = 60;
+        timeRemaining.setText(String.valueOf(secondsRemaining));
+      }
+    });
+
+    JButton selectTwoMinute = new JButton("120");
+    selectTwoMinute.setSize(50, 25);
+    selectTwoMinute.setFocusable(false);
+    selectTwoMinute.addActionListener(e -> {
+      if(state == GameState.NOT_STARTED) {
+        timeMode = TimeMode.TWO_MINUTE;
+        secondsRemaining = 120;
+        timeRemaining.setText(String.valueOf(secondsRemaining));
+      }
+    });
+
+    topPanel.add(selectFifteenSecond);
+    topPanel.add(selectThirtySecond);
+    topPanel.add(selectOneMinute);
+    topPanel.add(selectTwoMinute);
+
   }
 
   public void updateDisplay(int pos) {
@@ -184,6 +238,7 @@ public class GUI extends JFrame implements KeyListener {
   private void build() {
     initializeText();
     initializeTimer();
+    initializeTimeModeButtons();
     setVisible(true);
   }
 
@@ -216,6 +271,16 @@ public class GUI extends JFrame implements KeyListener {
   }
 
   @Override
-  public void keyReleased(KeyEvent e) {
+  public void keyReleased(KeyEvent e) {}
+
+  @Override
+  public void componentResized(java.awt.event.ComponentEvent e) {
+
   }
+  @Override
+  public void componentMoved(java.awt.event.ComponentEvent e) {}
+  @Override
+  public void componentShown(java.awt.event.ComponentEvent e) {}
+  @Override
+  public void componentHidden(java.awt.event.ComponentEvent e) {}
 }

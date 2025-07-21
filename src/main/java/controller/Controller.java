@@ -81,8 +81,23 @@ public class Controller {
     view.updateDisplay(updated.getPosition());
   }
 
-  public void endGame() {
-    String wpm = body.getWPM();
+  public void endGame(String timeMode) {
+    double mins = 0;
+    switch (timeMode) {
+      case "FIFTEEN_SECOND":
+        mins = 0.25;
+        break;
+      case "THIRTY_SECOND":
+        mins = 0.5;
+        break;
+      case "ONE_MINUTE":
+        mins = 1;
+        break;
+      case "TWO_MINUTE":
+        mins = 2;
+        break;
+    }
+    String wpm = body.getWPM(mins);
     String acc = body.getAccuracy();
     view.endOfGameDisplay(wpm, acc);
   }
