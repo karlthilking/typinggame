@@ -88,18 +88,29 @@ public class BodyImpl implements Body {
     return roundedAcc;
   }
 
-  public List<String> sortResults(List<String> results) {
+  public List<String> sortResults(List<String> fifteen, List<String> thirty, List<String> one, List<String> two) {
     List<String> topResults = new ArrayList<>();
-    List<Double> resultsAsDoubles = results.stream()
-        .map(Double::parseDouble)
+    double fifteenBest = fifteen.stream()
+        .mapToDouble(Double::parseDouble)
+        .max()
+        .orElse(0.0);
+    double thirtyBest = thirty.stream()
+        .mapToDouble(Double::parseDouble)
+        .max()
+        .orElse(0.0);
+    double oneBest = one.stream()
+        .mapToDouble(Double::parseDouble)
+        .max()
+        .orElse(0.0);
+    double twoBest = two.stream()
+        .mapToDouble(Double::parseDouble)
+        .max()
+        .orElse(0.0);
+
+    topResults = List.of(fifteenBest, thirtyBest, oneBest, twoBest).stream()
+        .map(result -> String.format("%.2f", result))
         .collect(Collectors.toList());
-    Collections.sort(resultsAsDoubles, Comparator.reverseOrder());
 
-    int limit = Math.min(3, results.size());
-
-    for(int i = 0; i < limit; i++) {
-      topResults.add(resultsAsDoubles.get(i).toString());
-    }
     return topResults;
   }
 }

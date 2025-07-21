@@ -1,2 +1,5 @@
 fix line breaks between words by making individual line jlabels
-change end of game results display to show high score for all time modes
+add ability to swtich themes
+add reset feature
+add background music with selection
+add sound effects with user selection

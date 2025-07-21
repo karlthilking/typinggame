@@ -102,10 +102,25 @@ public class Controller {
     view.endOfGameDisplay(wpm, acc);
   }
 
-  public void addResults(String wpm) {
+  public void addResults(String wpm, String timeMode) {
+    String file = "";
+    switch (timeMode) {
+      case "FIFTEEN_SECOND":
+        file = "15results.txt";
+        break;
+      case "THIRTY_SECOND":
+        file = "30results.txt";
+        break;
+      case "ONE_MINUTE":
+        file = "60results.txt";
+        break;
+      case "TWO_MINUTE":
+        file = "120results.txt";
+        break;
+    }
     try {
       String wpmEntry = wpm + "\n";
-      Files.write(Paths.get("results.txt"),
+      Files.write(Paths.get(file),
               wpmEntry.getBytes(),
               StandardOpenOption.CREATE,
               StandardOpenOption.APPEND);
@@ -116,8 +131,11 @@ public class Controller {
 
   public List<String> getTopResults() {
     try {
-      List<String> results = Files.readAllLines(Paths.get("results.txt"));
-      return body.sortResults(results);
+      List<String> fifteen = Files.readAllLines(Paths.get("15results.txt"));
+      List<String> thirty = Files.readAllLines(Paths.get("30results.txt"));
+      List<String> one = Files.readAllLines(Paths.get("60results.txt"));
+      List<String> two = Files.readAllLines(Paths.get("120results.txt"));
+      return body.sortResults(fifteen, thirty, one, two);
     } catch (IOException e) {
       System.out.println("Error reading results: " + e.getMessage());
       return List.of("0.0", "0.0", "0.0");
