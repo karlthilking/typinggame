@@ -2,10 +2,20 @@ package controller;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.BodyImpl;
 import model.EnhancedChar;
 import view.GUI;
+
+import static java.nio.file.Files.readAllLines;
 
 public class Controller {
   private final BodyImpl body;
@@ -72,9 +82,31 @@ public class Controller {
   }
 
   public void endGame() {
-    double wpm = body.getWPM();
-    double acc = body.getAccuracy();
+    String wpm = body.getWPM();
+    String acc = body.getAccuracy();
     view.endOfGameDisplay(wpm, acc);
+  }
+
+  public void addResults(String wpm) {
+    try {
+      String wpmEntry = wpm + "\n";
+      Files.write(Paths.get("results.txt"),
+              wpmEntry.getBytes(),
+              StandardOpenOption.CREATE,
+              StandardOpenOption.APPEND);
+    } catch (IOException e) {
+      System.out.println("Error saving results: " + e.getMessage());
+    }
+  }
+
+  public List<String> getTopResults() {
+    try {
+      List<String> results = Files.readAllLines(Paths.get("results.txt"));
+      return body.sortResults(results);
+    } catch (IOException e) {
+      System.out.println("Error reading results: " + e.getMessage());
+      return List.of("0.0", "0.0", "0.0");
+    }
   }
 
 }

@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -23,7 +24,6 @@ public class GUI extends JFrame implements KeyListener {
   private JPanel textPanel;
   private Timer timer;
   private int secondsRemaining = 60;
-  private JButton startButton;
   private JPanel topPanel;
   private GameState state = GameState.NOT_STARTED;
   private JPanel statsPanel;
@@ -48,7 +48,7 @@ public class GUI extends JFrame implements KeyListener {
   private void initializeText() {
     setTitle("Typing Game");
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    setResizable(false);
+    setResizable(true);
     setSize(1000, 600);
     setBackground(Color.LIGHT_GRAY);
 
@@ -88,14 +88,8 @@ public class GUI extends JFrame implements KeyListener {
         }
       }
     });
-    startButton = new JButton();
-    startButton.setPreferredSize(new Dimension(100, 30));
-    startButton.setText("START");
-    startButton.setFocusable(false);
-    startButton.addActionListener(e -> timerStart());
 
     topPanel.add(timeRemaining);
-    topPanel.add(startButton);
 
     add(topPanel, BorderLayout.NORTH);
   }
@@ -131,12 +125,15 @@ public class GUI extends JFrame implements KeyListener {
     textPanel.repaint();
   }
 
-  public void endOfGameDisplay(double WPM, double accuracy) {
+  public void endOfGameDisplay(String WPM, String accuracy) {
     getContentPane().removeAll();
 
-    statsPanel = new JPanel(new FlowLayout());
+    statsPanel = new JPanel();
+    statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
     statsPanel.setBackground(Color.LIGHT_GRAY);
     statsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+    List<String> results = controller.getTopResults();
 
     JLabel message = new JLabel("Game Completed");
     message.setFont(new Font("Arial", Font.BOLD, 75));
@@ -153,11 +150,30 @@ public class GUI extends JFrame implements KeyListener {
     accuracyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
     accuracyLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
+    JPanel resultsPanel = new JPanel();
+    resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
+    resultsPanel.setBackground(Color.LIGHT_GRAY);
+    resultsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+    JLabel title = new JLabel("Top Results");
+    title.setFont(new Font("Arial", Font.BOLD, 40));
+    title.setAlignmentX(Component.CENTER_ALIGNMENT);
+    resultsPanel.add(title);
+
+    for(int i = 0; i < results.size(); i++) {
+      JLabel resultLabel = new JLabel((i + 1) + ". " + results.get(i));
+      resultLabel.setFont(new Font("Arial", Font.PLAIN, 30));
+      resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+      resultsPanel.add(resultLabel);
+    }
 
     statsPanel.add(message);
     statsPanel.add(wpmLabel);
     statsPanel.add(accuracyLabel);
+    statsPanel.add(resultsPanel);
     add(statsPanel, BorderLayout.CENTER);
+
+    controller.addResults(WPM);
   }
 
   public void timerStart() {
@@ -184,10 +200,9 @@ public class GUI extends JFrame implements KeyListener {
       controller.handleTypedChar(c);
     }
     if (state == GameState.NOT_STARTED) {
-      if (e.getKeyChar() == ' ') {
-        timerStart();
-        state = GameState.STARTED;
-      }
+      char c = e.getKeyChar();
+      timerStart();
+      controller.handleTypedChar(c);
     }
   }
 
