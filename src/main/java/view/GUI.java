@@ -6,13 +6,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 
+import controller.AudioPlayer;
 import controller.Controller;
 import model.BodyImpl;
 import model.EnhancedChar;
@@ -32,6 +31,7 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
 
   private Controller controller;
   private BodyImpl body;
+  private AudioPlayer audioPlayer;
 
   public GUI() {
     initialize();
@@ -45,6 +45,7 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
   private void initialize() {
     body = new BodyImpl();
     controller = new Controller(body, this);
+    audioPlayer = new AudioPlayer();
   }
 
   private void initializeText() {
@@ -76,6 +77,7 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
     timeRemaining = new JLabel("60");
     timeRemaining.setFont(new Font("Arial", Font.BOLD, 20));
     timeRemaining.setHorizontalAlignment(SwingConstants.LEFT);
+    timeRemaining.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
     timer = new Timer(1000, new ActionListener() {
       @Override
@@ -96,7 +98,7 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
     add(topPanel, BorderLayout.NORTH);
   }
 
-  private void initializeTimeModeButtons() {
+  private void initializeTopPanelComponents() {
     JButton selectFifteenSecond = new JButton("15");
     selectFifteenSecond.setSize(50, 25);
     selectFifteenSecond.setFocusable(false);
@@ -141,10 +143,28 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
       }
     });
 
+    ImageIcon audio = new ImageIcon(Paths.get("sound.png").toFile().getAbsolutePath());
+    ImageIcon resizedAudioIcon = new ImageIcon(
+        audio.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+    JButton audioSelection = new JButton(resizedAudioIcon);
+    audioSelection.setSize(25, 25);
+    audioSelection.setFocusable(false);
+    audioSelection.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+    audioSelection.addActionListener( e -> {
+      String[] options = {"osu", "minecraft"};
+      String selectedSound = (String) JOptionPane.showInputDialog(
+          this, "Select a sound effect:", "Sound Selection",
+          JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+      if (selectedSound != null) {
+        audioPlayer.selectSound(selectedSound);
+      }
+    });
+
     topPanel.add(selectFifteenSecond);
     topPanel.add(selectThirtySecond);
     topPanel.add(selectOneMinute);
     topPanel.add(selectTwoMinute);
+    topPanel.add(audioSelection);
 
   }
 
@@ -215,7 +235,14 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
     resultsPanel.add(title);
 
     for(int i = 0; i < results.size(); i++) {
-      JLabel resultLabel = new JLabel((i + 1) + ". " + results.get(i));
+      int seconds = 0;
+      switch(i) {
+        case 0 -> seconds = 15;
+        case 1 -> seconds = 30;
+        case 2 -> seconds = 60;
+        case 3 -> seconds = 120;
+      }
+      JLabel resultLabel = new JLabel( seconds + " seconds: " + results.get(i));
       resultLabel.setFont(new Font("Arial", Font.PLAIN, 30));
       resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
       resultsPanel.add(resultLabel);
@@ -227,7 +254,7 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
     statsPanel.add(resultsPanel);
     add(statsPanel, BorderLayout.CENTER);
 
-    controller.addResults(WPM);
+    controller.addResults(WPM, timeMode.toString());
   }
 
   public void timerStart() {
@@ -238,7 +265,7 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
   private void build() {
     initializeText();
     initializeTimer();
-    initializeTimeModeButtons();
+    initializeTopPanelComponents();
     setVisible(true);
   }
 
@@ -246,6 +273,12 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
   public void keyTyped(KeyEvent e) {
     if (state == GameState.STARTED) {
       char c = e.getKeyChar();
+      try {
+        audioPlayer.playSound();
+      }
+      catch(NullPointerException ex) {
+        System.out.println(ex.getMessage());
+      }
 
       if (c == KeyEvent.VK_BACK_SPACE) {
         return;
@@ -256,6 +289,13 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
     }
     if (state == GameState.NOT_STARTED) {
       char c = e.getKeyChar();
+      try {
+        audioPlayer.playSound();
+      }
+      catch(NullPointerException ex) {
+        System.out.println(ex.getMessage());
+      }
+
       timerStart();
       controller.handleTypedChar(c);
     }
