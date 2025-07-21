@@ -105,12 +105,22 @@ public class GUI extends JFrame implements KeyListener {
 
     for (int i = 0; i < body.getChars().size(); i++) {
       JLabel label = text[i];
+      EnhancedChar temp = body.getChars().get(i);
 
       if (i == pos) {
         label.setBackground(Color.YELLOW);
       } else if (i < pos) {
+        if (temp.getCharacter() == ' ' && temp.getColor() == Color.RED) {
+          label.setText("_");
+          label.setForeground(Color.RED);
+          label.setBackground(null);
+        } else if (text[i].getText() == "_" && temp.getColor() != Color.RED) {
+          label.setText(" ");
+          label.setBackground(null);
+        } else {
           label.setForeground(body.getChars().get(i).getColor());
           label.setBackground(null);
+        }
       } else {
         label.setForeground(Color.BLACK);
         label.setBackground(null);
@@ -166,12 +176,18 @@ public class GUI extends JFrame implements KeyListener {
     if (state == GameState.STARTED) {
       char c = e.getKeyChar();
 
-      if(c == KeyEvent.VK_BACK_SPACE) {
+      if (c == KeyEvent.VK_BACK_SPACE) {
         return;
       }
 
       System.out.println("Key typed: " + c);
       controller.handleTypedChar(c);
+    }
+    if (state == GameState.NOT_STARTED) {
+      if (e.getKeyChar() == ' ') {
+        timerStart();
+        state = GameState.STARTED;
+      }
     }
   }
 

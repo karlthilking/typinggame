@@ -37,7 +37,7 @@ public class Controller {
 
     EnhancedChar updated = body.getChars().curr();
 
-    if(updated != null) {
+    if(updated != null ) {
       view.updateDisplay(updated.getPosition());
     }
     else {
