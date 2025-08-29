@@ -15,6 +15,7 @@ import javax.swing.*;
 
 import controller.AudioPlayer;
 import controller.Controller;
+import controller.RestartCommand;
 import model.BodyImpl;
 import model.EnhancedChar;
 
@@ -152,21 +153,15 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
     });
 
     ImageIcon audio = null;
+    ImageIcon resizedAudioIcon = null;
+
     try {
-      java.net.URL imageURL = getClass().getClassLoader().getResource("sound.png");
-      if (imageURL != null) {
-        audio = new ImageIcon(imageURL);
-      } else {
-        System.out.println("Warning: sound.png not found, using default icon");
-        audio = new ImageIcon(); // Empty icon as fallback
-      }
+      audio = new ImageIcon(getClass().getResource("/res/sound.png"));
+      resizedAudioIcon = new ImageIcon(audio.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
     } catch (Exception e) {
-      System.out.println("Error loading icon: " + e.getMessage());
-      audio = new ImageIcon(); // Fallback
+      System.out.println(e);
     }
 
-    ImageIcon resizedAudioIcon = new ImageIcon(
-            audio.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
     JButton audioSelection = new JButton(resizedAudioIcon);
     audioSelection.setSize(25, 25);
     audioSelection.setFocusable(false);
@@ -280,11 +275,21 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
       resultsPanel.add(resultLabel);
     }
 
+    JButton restart = new JButton("Restart");
+    restart.setSize(80, 35);
+    restart.setFocusable(false);
+    restart.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        controller.resetGame();
+      }
+    });
+
     statsPanel.add(message);
     statsPanel.add(wpmLabel);
     statsPanel.add(accuracyLabel);
     statsPanel.add(resultsPanel);
     add(statsPanel, BorderLayout.CENTER);
+    add(restart, BorderLayout.SOUTH);
 
     controller.addResults(WPM, timeMode.toString());
   }
