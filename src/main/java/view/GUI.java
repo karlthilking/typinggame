@@ -7,7 +7,9 @@ import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.*;
 
@@ -28,6 +30,8 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
   private JPanel topPanel;
   private GameState state = GameState.NOT_STARTED;
   private JPanel statsPanel;
+  private String lastKey = null;
+  private JPanel bottomPanel;
 
   private Controller controller;
   private BodyImpl body;
@@ -36,10 +40,6 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
   public GUI() {
     initialize();
     build();
-
-    this.addKeyListener(this);
-    this.setFocusable(true);
-    this.requestFocusInWindow();
   }
 
   private void initialize() {
@@ -55,11 +55,16 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
     setSize(1000, 600);
     setBackground(Color.LIGHT_GRAY);
 
+    this.setFocusTraversalKeysEnabled(false);
     text = new JLabel[body.getChars().size()];
 
     textPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     textPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     textPanel.setBackground(Color.LIGHT_GRAY);
+
+    textPanel.setFocusable(true);
+    textPanel.setFocusTraversalKeysEnabled(false);
+    textPanel.addKeyListener(this);
 
     for (int i = 0; i < text.length; i++) {
       text[i] = new JLabel(body.getChars().get(i).getCharacter() + "");
@@ -70,6 +75,9 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
     }
 
     add(textPanel, BorderLayout.CENTER);
+    SwingUtilities.invokeLater(() -> {
+      textPanel.requestFocusInWindow();
+    });
   }
 
   private void initializeTimer() {
@@ -168,9 +176,20 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
 
   }
 
-  public void updateDisplay(int pos) {
-    System.out.println("updateDisplay called with pos: " + pos);
+  private void initializeBottomPanelComponents() {
+    bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    bottomPanel.setBackground(Color.LIGHT_GRAY);
+    JLabel resetInstructions = new JLabel("tab + enter to reset");
+    resetInstructions.setFont(new Font("Monospaced", Font.PLAIN, 12));
+    resetInstructions.setBackground(Color.LIGHT_GRAY);
+    resetInstructions.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+    bottomPanel.add(resetInstructions);
+
+    add(bottomPanel, BorderLayout.SOUTH);
+  }
+
+  public void updateDisplay(int pos) {
     for (int i = 0; i < body.getChars().size(); i++) {
       JLabel label = text[i];
       EnhancedChar temp = body.getChars().get(i);
@@ -266,13 +285,18 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
     initializeText();
     initializeTimer();
     initializeTopPanelComponents();
+    initializeBottomPanelComponents();
     setVisible(true);
   }
 
   @Override
   public void keyTyped(KeyEvent e) {
+    char c = e.getKeyChar();
+    if (c == '\t' || c == '\n' || c == '\r') {
+      e.consume();
+      return;
+    }
     if (state == GameState.STARTED) {
-      char c = e.getKeyChar();
       try {
         audioPlayer.playSound();
       }
@@ -283,12 +307,9 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
       if (c == KeyEvent.VK_BACK_SPACE) {
         return;
       }
-
-      System.out.println("Key typed: " + c);
       controller.handleTypedChar(c);
     }
     if (state == GameState.NOT_STARTED) {
-      char c = e.getKeyChar();
       try {
         audioPlayer.playSound();
       }
@@ -303,20 +324,31 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
 
   @Override
   public void keyPressed(KeyEvent e) {
-    if (state == GameState.STARTED) {
-      if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+    if (e.getKeyCode() == KeyEvent.VK_TAB) {
+      e.consume();
+      lastKey = "tab";
+    } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+      e.consume();
+      if (lastKey != null && lastKey.equals("tab")) {
+        controller.resetGame();
+      }
+      lastKey = "enter";
+    } else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+      if (state == GameState.STARTED) {
+        lastKey = "backspace";
         controller.handleBackspace();
       }
+    } else {
+      lastKey = KeyEvent.getKeyText(e.getKeyCode()).toLowerCase();
+      System.out.println("Last key: " + lastKey);
     }
   }
 
+
   @Override
   public void keyReleased(KeyEvent e) {}
-
   @Override
-  public void componentResized(java.awt.event.ComponentEvent e) {
-
-  }
+  public void componentResized(java.awt.event.ComponentEvent e) {}
   @Override
   public void componentMoved(java.awt.event.ComponentEvent e) {}
   @Override

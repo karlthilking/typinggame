@@ -27,8 +27,6 @@ public class Controller {
   }
 
   public void handleTypedChar(char c) {
-    System.out.println("Handling char: " + c);
-
     EnhancedChar curr = body.getChars().curr();
 
     if(curr == null) {
@@ -140,6 +138,11 @@ public class Controller {
       System.out.println("Error reading results: " + e.getMessage());
       return List.of("0.0", "0.0", "0.0");
     }
+  }
+
+  public void resetGame() {
+    Command reset = new RestartCommand();
+    reset.execute(body, view);
   }
 
 }

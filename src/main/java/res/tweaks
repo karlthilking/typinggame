@@ -1,5 +1,4 @@
 fix line breaks between words by making individual line jlabels
 add ability to swtich themes
-add reset feature
-add background music with selection
-add sound effects with user selection
+add live wpm
+make misclicking space not resize text
