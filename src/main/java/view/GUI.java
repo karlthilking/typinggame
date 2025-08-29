@@ -151,9 +151,22 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
       }
     });
 
-    ImageIcon audio = new ImageIcon(Paths.get("sound.png").toFile().getAbsolutePath());
+    ImageIcon audio = null;
+    try {
+      java.net.URL imageURL = getClass().getClassLoader().getResource("sound.png");
+      if (imageURL != null) {
+        audio = new ImageIcon(imageURL);
+      } else {
+        System.out.println("Warning: sound.png not found, using default icon");
+        audio = new ImageIcon(); // Empty icon as fallback
+      }
+    } catch (Exception e) {
+      System.out.println("Error loading icon: " + e.getMessage());
+      audio = new ImageIcon(); // Fallback
+    }
+
     ImageIcon resizedAudioIcon = new ImageIcon(
-        audio.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+            audio.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
     JButton audioSelection = new JButton(resizedAudioIcon);
     audioSelection.setSize(25, 25);
     audioSelection.setFocusable(false);
