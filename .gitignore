@@ -1,15 +1,23 @@
-# Build artifacts - NEVER commit these
+# Build artifacts
 *.jar
 *.dmg
 *.exe
 *.app
 build/
 manifest.txt
+
+# Launch4j and JRE
 launch4j/
 launch4j.tgz
 launch4j-config.xml
+custom-jre/
 
-# IDE and system files
+# Audio files
+*.wav
+*.mp3
+*.ogg
+
+# System files
 .DS_Store
 *.iml
 .idea/
