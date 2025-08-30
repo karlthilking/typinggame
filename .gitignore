@@ -1,29 +1,20 @@
-### IntelliJ IDEA ###
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+# Build artifacts - NEVER commit these
+*.jar
+*.dmg
+*.exe
+*.app
+build/
+manifest.txt
+launch4j/
+launch4j.tgz
+launch4j-config.xml
 
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
+# IDE and system files
+.DS_Store
+*.iml
+.idea/
 .vscode/
 
-### Mac OS ###
-.DS_Store
+# Temporary files
+*.tmp
+*.log
