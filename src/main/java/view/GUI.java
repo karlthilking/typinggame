@@ -43,7 +43,7 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
     build();
   }
 
-  private void initialize() {
+  public void initialize() {
     body = new BodyImpl();
     controller = new Controller(body, this);
     audioPlayer = new AudioPlayer();
@@ -299,7 +299,7 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
     timer.start();
   }
 
-  private void build() {
+  public void build() {
     initializeText();
     initializeTimer();
     initializeTopPanelComponents();
