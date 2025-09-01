@@ -4,9 +4,9 @@ import model.Body;
 import model.BodyImpl;
 import view.GUI;
 
-public class RestartCommand implements Command {
+public class NewGameCommand implements Command {
     @Override
     public void execute(Body body, GUI gui) {
-       gui = new GUI();
+        gui = new GUI();
     }
 }

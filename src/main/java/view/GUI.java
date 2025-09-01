@@ -280,7 +280,8 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
     restart.setFocusable(false);
     restart.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        controller.resetGame();
+        controller.newGame();
+        setVisible(false);
       }
     });
 
@@ -349,6 +350,7 @@ public class GUI extends JFrame implements KeyListener, ComponentListener {
       e.consume();
       if (lastKey != null && lastKey.equals("tab")) {
         controller.resetGame();
+        this.setVisible(false);
       }
       lastKey = "enter";
     } else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {

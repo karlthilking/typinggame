@@ -145,4 +145,9 @@ public class Controller {
     reset.execute(body, view);
   }
 
+  public void newGame() {
+    Command newGame = new NewGameCommand();
+    newGame.execute(body, view);
+  }
+
 }
